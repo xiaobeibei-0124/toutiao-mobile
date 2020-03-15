@@ -1,5 +1,9 @@
 <template>
-  <div>小智同学组件</div>
+  <div>
+    <div class="container">
+      <van-nav-bar title="小智同学" left-arrow @click-left="$router.back()"></van-nav-bar>
+   </div>
+  </div>
 </template>
 
 <script>
