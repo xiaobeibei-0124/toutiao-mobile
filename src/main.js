@@ -2,9 +2,11 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import Vant from 'vant' // 引入vant组件
+import 'vant/lib/index.css' // 引入vant组件样式
 
 Vue.config.productionTip = false
-
+Vue.use(Vant) // 全局注册使用组件
 new Vue({
   router,
   store,
