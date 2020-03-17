@@ -21,6 +21,6 @@ export function getUser () {
 }
 
 // 删除用户的token信息
-export function delUser (params) {
+export function delUser () {
   localStorage.removeItem(USER_TOKEN)
 }
