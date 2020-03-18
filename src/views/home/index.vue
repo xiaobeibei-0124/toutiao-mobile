@@ -1,13 +1,15 @@
 <template>
   <div class="container">
+    <!-- 标签区域 -->
    <van-tabs>
      <van-tab v-for="item in 10" :key="item" :title="`标签${item}`">
        <!-- 放入cell单元格 -->
-       <div class="scroll-wrapper">
+       <!-- <div class="scroll-wrapper">
         <van-cell-group>
           <van-cell title="标题" value="内容" v-for="item in 20" :key="item"></van-cell>
         </van-cell-group>
-       </div>
+       </div> -->
+       <ArticleList></ArticleList>
      </van-tab>
    </van-tabs>
    <!-- 在tabs下放置图标  编辑频道的图标 -->
@@ -18,7 +20,13 @@
 </template>
 
 <script>
-export default {}
+// 引入列表组件并注册
+import ArticleList from './components/article-list'
+export default {
+  components: {
+    ArticleList
+  }
+}
 </script>
 
 <style lang='less' scoped >
