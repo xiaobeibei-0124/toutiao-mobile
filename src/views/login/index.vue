@@ -79,7 +79,8 @@ export default {
           const { redirectUrl } = this.$route.query // query查询参数 也就是 ?后边的参数表
           this.$router.push(redirectUrl || '/') // 短路表达式
         } catch (error) {
-          this.$notify({ message: '手机号码或者验证码错误', duration: 800 })
+          // this.$notify({ message: '手机号码或者验证码错误', duration: 800 })
+          this.$gnotify({ message: '手机号码或者验证码错误' })
         }
       }
     }
