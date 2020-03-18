@@ -18,13 +18,17 @@
 </template>
 
 <script>
+// 引入mapmutations 辅助函数 映射到methods中
+import { login } from '@/api/user'
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
       // 接收表单数据
+      // 为了操作方便先写死
       loginForm: {
-        mobile: '',
-        code: ''
+        mobile: '13911111111',
+        code: '246810'
       },
       errorMessage: {
         mobile: '',
@@ -33,6 +37,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['updateUser']), // 可以导入需要的方法  直接把updateUser方法映射到当前的methods方法中
     checkMobile () {
       if (!this.loginForm.mobile) {
         this.errorMessage.mobile = '电话号码不能为空'
@@ -58,11 +63,24 @@ export default {
       return true
     },
     // 点击登录校验
-    login () {
+    async login () {
       const Mobile = this.checkMobile()
       const Code = this.checkCode()
       if (Mobile && Code) {
-        console.log('校验成功')
+        // console.log('校验成功')
+        // 到达这里说明校验成功 需要调接口 发请求验证数据
+        try {
+          const result = await login(this.loginForm)
+          // 将返回的结果共享给vuex 改变state的值 统一管理
+          // 想要改变state的值就要通过mutations
+          // mupmutations 映射到这里 直接使用 更新token和refresh_token
+          this.updateUser({ user: result })
+          // 更新之后跳转页面 看是否有之前传递过来的参数
+          const { redirectUrl } = this.$route.query // query查询参数 也就是 ?后边的参数表
+          this.$router.push(redirectUrl || '/') // 短路表达式
+        } catch (error) {
+          this.$notify({ message: '手机号码或者验证码错误', duration: 800 })
+        }
       }
     }
   }

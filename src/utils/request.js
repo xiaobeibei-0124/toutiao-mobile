@@ -6,7 +6,7 @@
 import axios from 'axios'
 import JSONBig from 'json-bigint'
 import store from '@/store'
-import router from 'router'
+import router from '@/router'
 
 // new一个新的axios实例
 const instance = axios.create({
@@ -23,9 +23,9 @@ instance.interceptors.request.use(function (config) {
   // 成功执行此函数
   if (store.state.user.token) {
     config.headers.Authorization = `Bearer ${store.state.user.token}`
-    // 返回配置
-    return config
   }
+  // 返回配置 一定要写在外面 是请求拦截器执行完之后要返回config
+  return config
 }, function (error) {
   // 失败的话返回错误信息
   return Promise.reject(error)
