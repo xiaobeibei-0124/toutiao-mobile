@@ -44,7 +44,7 @@ export default {
   data () {
     return {
       successText: '', // 刷新成功显示的提示
-      downLoading: false, // 表示下拉加载
+      downLoading: false, // 表示下拉刷新加载
       upLoading: false, // 表示是否开启了上拉加载 默认值false
       finished: false, // 表示 是否已经完成所有数据的加载
       articles: [], // 用来接收文章的数组
@@ -99,16 +99,35 @@ export default {
       // }
     },
     // 下拉刷新方法
-    onRefresh () {
-      setTimeout(() => {
-        const arr = Array.from(
-          Array(2),
-          (value, index) => '追加' + (index + 1)
-        )
-        this.articles.unshift(...arr)
-        this.downLoading = false
-        this.successText = `更新了${arr.length}条数据`
-      }, 1000)
+    async onRefresh () {
+      const data = await getArticles({
+        channel_id: this.channel_id,
+        timestamp: Date.now() // 永远传最新的时间戳，获取新数据
+      })
+      this.downLoading = false
+      // 判断最新的时间戳是否能换回新的数据
+      if (data.results.length) {
+        this.articles = data.results // 直接用最新数据替换掉历史数据
+        // 如果你拉倒最下边没有历史数据了 有向上刷新 新加载的数据后有新的历史事件戳
+        // 需要手动吧打开的关闭上拉加载关掉 将新的历史事件戳重新赋值
+        if (data.pre_timestamp) {
+          this.finished = false
+          this.timestamp = data.pre_timestamp
+        }
+        this.successText = `更新了${data.results.length}条数据`
+      } else {
+        this.successText = '当前已经是最新数据了'
+      }
+
+      // setTimeout(() => {
+      //   const arr = Array.from(
+      //     Array(2),
+      //     (value, index) => '追加' + (index + 1)
+      //   )
+      //   this.articles.unshift(...arr)
+      //   this.downLoading = false
+      //   this.successText = `更新了${arr.length}条数据`
+      // }, 1000)
     }
   }
 }
