@@ -5,12 +5,34 @@
   <!-- 阅读记忆  上次你阅读到哪  回来之后还是哪-->
   <div class="scroll-wrapper">
     <!-- load 滚动条与底部距离小于offset (300px) 时触发 -->
-    <van-pull-refresh v-model="downLoading" @refresh='onRefresh' :success-text="successText">
+    <van-pull-refresh v-model="downLoading" @refresh="onRefresh" :success-text="successText">
       <van-list v-model="upLoading" :finished="finished" @load="onLoad" finished-text="加载完毕">
-      <van-cell-group>
-        <van-cell title="123" :value="'数据'+item" v-for="item in articles" :key="item"></van-cell>
-      </van-cell-group>
-    </van-list>
+        <van-cell-group>
+          <van-cell v-for="item in articles" :key="item">
+            <div class="article_item">
+              <h3 class="van-ellipsis">PullRefresh下拉刷新PullRefresh下拉刷新下拉刷新下拉刷新</h3>
+              <!-- 三图情况 -->
+              <div class="img_box">
+                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+              </div>
+              <!-- 单图情况 -->
+              <div class="img_box">
+                <van-image class="w100" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+              </div>
+              <div class="info_box">
+                <span>你像一阵风</span>
+                <span>8评论</span>
+                <span>10分钟前</span>
+                <span class="close">
+                  <van-icon name="cross"></van-icon>
+                </span>
+              </div>
+            </div>
+          </van-cell>
+        </van-cell-group>
+      </van-list>
     </van-pull-refresh>
   </div>
 </template>
@@ -41,7 +63,10 @@ export default {
       if (this.articles.length > 50) {
         this.finished = true // 关闭加载
       } else {
-        const arr = Array.from(Array(15), (value, index) => this.articles.length + index + 1)
+        const arr = Array.from(
+          Array(15),
+          (value, index) => this.articles.length + index + 1
+        )
         this.articles.push(...arr)
         this.upLoading = false
       }
@@ -49,17 +74,58 @@ export default {
     // 下拉刷新方法
     onRefresh () {
       setTimeout(() => {
-        const arr = Array.from(Array(2), (value, index) => '追加' + (index + 1))
+        const arr = Array.from(
+          Array(2),
+          (value, index) => '追加' + (index + 1)
+        )
         this.articles.unshift(...arr)
         this.downLoading = false
         this.successText = `更新了${arr.length}条数据`
       }, 1000)
     }
   }
-
 }
 </script>
 
-<style>
-
+<style lang='less' scoped>
+.article_item{
+  h3{
+    font-weight: normal;
+    line-height: 2;
+  }
+  .img_box{
+    display: flex;
+    justify-content: space-between;
+    .w33{
+      width: 33%;
+      height: 90px;
+    }
+    .w100{
+      width: 100%;
+      height: 180px;
+    }
+  }
+  .info_box{
+    color: #999;
+    line-height: 2;
+    position: relative;
+    font-size: 12px;
+    span{
+      padding-right: 10px;
+      &.close{
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        line-height: 15px;
+        height: 12px;
+        width: 16px;
+        text-align: center;
+        padding-right: 0;
+        font-size: 8px;
+        position: absolute;
+        right: 0;
+        top: 7px;
+      }
+    }
+  }
+}
 </style>
