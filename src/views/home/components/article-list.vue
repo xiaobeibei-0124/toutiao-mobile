@@ -63,6 +63,7 @@ export default {
   methods: {
     // 上拉加载方法
     async onLoad () {
+      await this.$sleep() // 人为添加等待时间 避免频繁访问服务器
       const data = await getArticles({
         channel_id: this.channel_id,
         timestamp: this.timestamp || Date.now() // 如果有历史事件戳用历史，没有用现在
@@ -100,6 +101,7 @@ export default {
     },
     // 下拉刷新方法
     async onRefresh () {
+      await this.$sleep()
       const data = await getArticles({
         channel_id: this.channel_id,
         timestamp: Date.now() // 永远传最新的时间戳，获取新数据
