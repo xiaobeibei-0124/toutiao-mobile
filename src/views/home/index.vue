@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 标签区域 -->
    <van-tabs>
-     <van-tab v-for="item in 10" :key="item" :title="`标签${item}`">
+     <van-tab v-for="item in channels" :key="item.id" :title="item.name">
        <!-- 放入cell单元格 -->
        <!-- <div class="scroll-wrapper">
         <van-cell-group>
@@ -22,9 +22,26 @@
 <script>
 // 引入列表组件并注册
 import ArticleList from './components/article-list'
+import { getChannels } from '@/api/channels'
 export default {
   components: {
     ArticleList
+  },
+  data () {
+    return {
+      channels: [] // 接收频道数据
+    }
+  },
+  methods: {
+    // 自定义的方法 获取频道列表
+    async getChannels () {
+      // 调接口获取频道列表
+      const data = await getChannels()
+      this.channels = data.channels
+    }
+  },
+  created () {
+    this.getChannels()
   }
 }
 </script>
