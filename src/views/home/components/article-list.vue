@@ -8,7 +8,7 @@
     <van-pull-refresh v-model="downLoading" @refresh="onRefresh" :success-text="successText">
       <van-list v-model="upLoading" :finished="finished" @load="onLoad" finished-text="加载完毕">
         <van-cell-group>
-          <van-cell v-for="item in articles" :key="item">
+          <van-cell v-for="item in articles" :key="item.art_id">
             <div class="article_item">
               <h3 class="van-ellipsis">PullRefresh下拉刷新PullRefresh下拉刷新下拉刷新下拉刷新</h3>
               <!-- 三图情况 -->
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+// 引入获取文章电泳接口方法
+import { getArticles } from '@/api/articles'
 export default {
   data () {
     return {
@@ -60,7 +62,22 @@ export default {
   },
   methods: {
     // 上拉加载方法
-    onLoad () {
+    async onLoad () {
+      const data = await getArticles({
+        channel_id: this.channel_id,
+        timestamp: this.timestamp || Date.now() // 如果有历史事件戳用历史，没有用现在
+      })
+      // 每次加载完毕追加数据
+      this.articles.push(data.results)
+      // 关闭加载状态
+      this.upLoading = false
+      // 判断历史时间戳是否为0 为0 则开始finish 不为0 传递给data
+      if (data.pre_timestamp) {
+        this.timestamp = data.pre_timestamp
+      } else {
+        this.finished = true
+      }
+
       // 下面这么写 依然不能关掉加载状态 为什么 ? 因为关掉之后  检测机制  高度还是不够 还是会开启
       // 如果你有数据 你应该 把数据到加到list中
       // 如果想关掉
@@ -70,16 +87,16 @@ export default {
       // console.log('开始加载')
       // Array.from()方法就是将一个类数组对象或者可遍历对象转换成一个真正的数组。
       // 将数据控制在50以内
-      if (this.articles.length > 50) {
-        this.finished = true // 关闭加载
-      } else {
-        const arr = Array.from(
-          Array(15),
-          (value, index) => this.articles.length + index + 1
-        )
-        this.articles.push(...arr)
-        this.upLoading = false
-      }
+      // if (this.articles.length > 50) {
+      //   this.finished = true // 关闭加载
+      // } else {
+      //   const arr = Array.from(
+      //     Array(15),
+      //     (value, index) => this.articles.length + index + 1
+      //   )
+      //   this.articles.push(...arr)
+      //   this.upLoading = false
+      // }
     },
     // 下拉刷新方法
     onRefresh () {
