@@ -14,7 +14,7 @@
    </van-tabs>
    <!-- 在tabs下放置图标  编辑频道的图标 -->
    <span class="bar_btn">
-     <van-icon name='wap-nav' />>
+     <van-icon name='wap-nav' />
    </span>
   </div>
 </template>
