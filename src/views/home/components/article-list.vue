@@ -45,7 +45,17 @@ export default {
       downLoading: false, // 表示下拉加载
       upLoading: false, // 表示是否开启了上拉加载 默认值false
       finished: false, // 表示 是否已经完成所有数据的加载
-      articles: [] // 用来接收文章的数组
+      articles: [], // 用来接收文章的数组
+      timestamp: null // 定义一个时间戳属性 用来存储 历史时间戳
+    }
+  },
+  // 父组件传递进来的文章id值
+  props: {
+    // key(props属性名): value(对象 配置)
+    channel_id: {
+      required: true, // 此项为true 说明必须传入参数
+      type: Number, // 确定传入的数据类型
+      default: null // 默认值的意思 假如你没有传入 prop属性 默认值 就会被采用
     }
   },
   methods: {
