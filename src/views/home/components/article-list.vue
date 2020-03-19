@@ -8,23 +8,23 @@
     <van-pull-refresh v-model="downLoading" @refresh="onRefresh" :success-text="successText">
       <van-list v-model="upLoading" :finished="finished" @load="onLoad" finished-text="加载完毕">
         <van-cell-group>
-          <van-cell v-for="item in articles" :key="item.art_id">
+          <van-cell v-for="item in articles" :key="item.art_id.toString()">
             <div class="article_item">
-              <h3 class="van-ellipsis">PullRefresh下拉刷新PullRefresh下拉刷新下拉刷新下拉刷新</h3>
+              <h3 class="van-ellipsis">{{item.title}}</h3>
               <!-- 三图情况 -->
-              <div class="img_box">
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+              <div class="img_box" v-if="item.cover.type === 3">
+                <van-image class="w33" fit="cover" :src="item.cover.images[0]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[1]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[2]" />
               </div>
               <!-- 单图情况 -->
-              <div class="img_box">
-                <van-image class="w100" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+              <div class="img_box" v-if="item.cover.type === 1">
+                <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
               </div>
               <div class="info_box">
-                <span>你像一阵风</span>
-                <span>8评论</span>
-                <span>10分钟前</span>
+                <span>{{item.aut_name}}</span>
+                <span>{{item.comm_count}}条评论</span>
+                <span>{{item.pubdate}}</span>
                 <span class="close">
                   <van-icon name="cross"></van-icon>
                 </span>
@@ -68,7 +68,7 @@ export default {
         timestamp: this.timestamp || Date.now() // 如果有历史事件戳用历史，没有用现在
       })
       // 每次加载完毕追加数据
-      this.articles.push(data.results)
+      this.articles.push(...data.results)
       // 关闭加载状态
       this.upLoading = false
       // 判断历史时间戳是否为0 为0 则开始finish 不为0 传递给data
