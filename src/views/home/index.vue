@@ -20,7 +20,10 @@
    <!-- 引入more-action组件 -->
    <!-- 弹层显示 -->
    <van-popup v-model="showmoreAction" style="width:80%">
-     <moreAction @dislike='dislikeArticle'></moreAction>
+      <!-- 不喜欢文章 和 举报文章 用一个方法 -->
+      <!-- @事件名="方法名"  @事件名="方法名()" @事件名="方法名($event 参数)" @事件名="逻辑" -->
+      <!-- $event 是事件参数 在h5标签中 dom元素的事件参数  自定义事件中$event 就是自定义事件传出的第一个参数 -->
+     <moreAction @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></moreAction>
    </van-popup>
   </div>
 </template>
@@ -31,7 +34,7 @@ import ArticleList from './components/article-list'
 import moreAction from './components/more-action'
 import { getChannels } from '@/api/channels'
 // 引入文章不感兴趣接口
-import { disLike } from '@/api/articles'
+import { disLike, reportArticle } from '@/api/articles'
 // 引入事件广播，触发文章不感兴趣接口后开始广播
 import eventBus from '@/utils/eventbus'
 export default {
@@ -61,10 +64,15 @@ export default {
       this.articleId = artId
     },
     // 对文章不感兴趣
-    async dislikeArticle () {
+    // operateType 是操作类型 如果是dislike 就是不喜欢 如果是 report 就是 举报
+    async dislikeOrReport (operateType, type) {
       try {
-        await disLike({
+        // 需要根据一个参数来判断 是举报还是不喜欢
+        operateType === 'dislike' ? await disLike({
           target: this.articleId
+        }) : await reportArticle({
+          target: this.articleId,
+          type //  这里的type怎么办 ?????? 通过$event传出来
         })
         this.$gnotify({
           type: 'success',
