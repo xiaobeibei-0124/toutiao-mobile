@@ -26,7 +26,8 @@
                 <span>{{item.comm_count}}条评论</span>
                 <!-- 使用过滤器处理相对时间 -->
                 <span>{{item.pubdate | relTime}}</span>
-                <span class="close">
+                <!-- 关闭的按键，用户没用登录不应该显示 是否登录有没有token值 -->
+                <span class="close" v-if="user.token" @click="$emit('showAction')">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
@@ -39,9 +40,14 @@
 </template>
 
 <script>
+// token 在vuex统一管理 引入vuex中mapState
+import { mapState } from 'vuex'
 // 引入获取文章电泳接口方法
 import { getArticles } from '@/api/articles'
 export default {
+  computed: {
+    ...mapState(['user']) // 将user对象映射到计算属性中
+  },
   data () {
     return {
       successText: '', // 刷新成功显示的提示

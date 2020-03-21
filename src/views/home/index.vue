@@ -9,27 +9,36 @@
           <van-cell title="标题" value="内容" v-for="item in 20" :key="item"></van-cell>
         </van-cell-group>
        </div> -->
-       <ArticleList :channel_id='item.id'></ArticleList>
+       <!-- 监听子组件点击事件，打开不感兴趣弹窗 -->
+       <ArticleList :channel_id='item.id' @showAction='openAction'></ArticleList>
      </van-tab>
    </van-tabs>
    <!-- 在tabs下放置图标  编辑频道的图标 -->
    <span class="bar_btn">
      <van-icon name='wap-nav' />
    </span>
+   <!-- 引入more-action组件 -->
+   <!-- 弹层显示 -->
+   <van-popup v-model="showmoreAction" style="width:80%">
+     <moreAction></moreAction>
+   </van-popup>
   </div>
 </template>
 
 <script>
 // 引入列表组件并注册
 import ArticleList from './components/article-list'
+import moreAction from './components/more-action'
 import { getChannels } from '@/api/channels'
 export default {
   components: {
-    ArticleList
+    ArticleList,
+    moreAction
   },
   data () {
     return {
-      channels: [] // 接收频道数据
+      channels: [], // 接收频道数据
+      showmoreAction: false
     }
   },
   methods: {
@@ -38,6 +47,10 @@ export default {
       // 调接口获取频道列表
       const data = await getChannels()
       this.channels = data.channels
+    },
+    // 显示不感兴趣弹层
+    openAction () {
+      this.showmoreAction = true
     }
   },
   created () {
