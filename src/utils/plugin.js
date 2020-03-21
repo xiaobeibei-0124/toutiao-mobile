@@ -1,6 +1,10 @@
 /**
  * plugin.js 专门提供小函数以及vue中常见的过滤器及函数
  */
+import dayjs from 'dayjs' // 引入dayjs插件
+import relativeTime from 'dayjs/plugin/relativeTime' // 引入相对时间函数
+import 'dayjs/locale/zh-cn'
+dayjs.extend(relativeTime) // 相当于 dayjs扩展 相对时间的方法 这个方法写完之后 dayjs 就有了form方法
 
 export default {
   install (Vue) {
@@ -9,6 +13,8 @@ export default {
     Vue.prototype.$gnotify = (params) => Vue.prototype.$notify({ duration: 800, ...params })
 
     Vue.prototype.$sleep = sleep // 定义一个原型属性 $sleep 所有组件都有了这个属性
+    // Vue.filter(名称, 函数)
+    Vue.filter('relTime', relTime) // 注册一个全局过滤器 一旦注册任意位置都可以随意使用
   }
 }
 
@@ -21,4 +27,10 @@ function sleep (time = 500) {
       resolve() // 直接返回成功
     }, time)
   })
+}
+
+// 相对时间函数
+// date是指传入的时间
+function relTime (date) {
+  return dayjs().locale('zh-cn').from(date)
 }
