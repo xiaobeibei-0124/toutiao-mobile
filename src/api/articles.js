@@ -12,3 +12,14 @@ export function getArticles (params) {
     }
   })
 }
+
+/**
+ * 对文章不喜欢，不感兴趣接口
+ */
+export function disLike (data) {
+  return request({
+    url: '/article/dislikes',
+    method: 'post',
+    data
+  })
+}

@@ -1,7 +1,9 @@
 <template>
   <div class="more-action">
     <van-cell-group v-if="!isReport">
-      <van-cell>不感兴趣</van-cell>
+      <!-- 点击不感兴趣后，传递到父组件执行不感兴趣接口 -->
+      <!-- 父组件中执行所有方法(总控台)，子组件只渲染值，不调用方法 -->
+      <van-cell @click="$emit('dislike')">不感兴趣</van-cell>
       <van-cell is-link @click="isReport=true">反馈垃圾内容</van-cell>
       <van-cell>拉黑作者</van-cell>
     </van-cell-group>

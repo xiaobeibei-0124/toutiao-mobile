@@ -27,7 +27,7 @@
                 <!-- 使用过滤器处理相对时间 -->
                 <span>{{item.pubdate | relTime}}</span>
                 <!-- 关闭的按键，用户没用登录不应该显示 是否登录有没有token值 -->
-                <span class="close" v-if="user.token" @click="$emit('showAction')">
+                <span class="close" v-if="user.token" @click="$emit('showAction',item.art_id.toString())">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
@@ -44,9 +44,28 @@
 import { mapState } from 'vuex'
 // 引入获取文章电泳接口方法
 import { getArticles } from '@/api/articles'
+import eventBus from '@/utils/eventbus'
 export default {
   computed: {
     ...mapState(['user']) // 将user对象映射到计算属性中
+  },
+  // 开始加载就开始监听事件广播
+  created () {
+    // 监听eventBus.$on(事件名，方法)
+    eventBus.$on('delArticle', (artId, channelId) => {
+      // 每个组件实例都在监听 需要找到对应的频道
+      if (channelId === this.channel_id) {
+        // 找到对应的文章
+        const index = this.articles.findIndex(item => item.art_id.toString() === artId)
+        if (index > -1) {
+          this.articles.splice(index, 1)
+        }
+        // 但是一直删会把数据删完，没有滚动条就不会加载新数据，需要手动加载
+        if (this.articles.length === 0) {
+          this.onLoad()
+        }
+      }
+    })
   },
   data () {
     return {

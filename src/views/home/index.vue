@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <!-- 标签区域 -->
-   <van-tabs>
+   <van-tabs v-model="activeIndex">
      <van-tab v-for="item in channels" :key="item.id" :title="item.name">
        <!-- 放入cell单元格 -->
        <!-- <div class="scroll-wrapper">
@@ -20,7 +20,7 @@
    <!-- 引入more-action组件 -->
    <!-- 弹层显示 -->
    <van-popup v-model="showmoreAction" style="width:80%">
-     <moreAction></moreAction>
+     <moreAction @dislike='dislikeArticle'></moreAction>
    </van-popup>
   </div>
 </template>
@@ -30,6 +30,10 @@
 import ArticleList from './components/article-list'
 import moreAction from './components/more-action'
 import { getChannels } from '@/api/channels'
+// 引入文章不感兴趣接口
+import { disLike } from '@/api/articles'
+// 引入事件广播，触发文章不感兴趣接口后开始广播
+import eventBus from '@/utils/eventbus'
 export default {
   components: {
     ArticleList,
@@ -38,7 +42,9 @@ export default {
   data () {
     return {
       channels: [], // 接收频道数据
-      showmoreAction: false
+      showmoreAction: false,
+      articleId: null, // 默认文章id为null
+      activeIndex: 0 // 默认分类标签为0
     }
   },
   methods: {
@@ -49,8 +55,31 @@ export default {
       this.channels = data.channels
     },
     // 显示不感兴趣弹层
-    openAction () {
+    openAction (artId) {
       this.showmoreAction = true
+      // 存储文章id 进行后续操作
+      this.articleId = artId
+    },
+    // 对文章不感兴趣
+    async dislikeArticle () {
+      try {
+        await disLike({
+          target: this.articleId
+        })
+        this.$gnotify({
+          type: 'success',
+          message: '操作成功'
+        })
+        // 操作成功会进行事件广播
+        // 广播时传递两个参数 点击的哪篇文章 处于哪个标签下
+        // 文章：this.articleId 标签:this.channels[this.activeIndex].id
+        eventBus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id)
+        this.showmoreAction = false
+      } catch (error) {
+        this.$gnotify({
+          message: '操作失败'
+        })
+      }
     }
   },
   created () {
