@@ -28,7 +28,7 @@
    <!-- 频道组件 -->
    <!-- 引入上拉菜单 -->
    <van-action-sheet v-model="showChannelEdit" title="编辑频道" :round="false">
-     <channelEdit :activeIndex='activeIndex' :channels='channels' @selectChannel='selectChannel'></channelEdit>
+     <channelEdit @addChannel='addChannel' @delChannels='delChannels' :activeIndex='activeIndex' :channels='channels' @selectChannel='selectChannel'></channelEdit>
    </van-action-sheet>
   </div>
 </template>
@@ -37,7 +37,7 @@
 // 引入列表组件并注册
 import ArticleList from './components/article-list'
 import moreAction from './components/more-action'
-import { getChannels } from '@/api/channels'
+import { getChannels, delChannels, addChannel } from '@/api/channels'
 // 引入文章不感兴趣接口
 import { disLike, reportArticle } from '@/api/articles'
 // 引入事件广播，触发文章不感兴趣接口后开始广播
@@ -101,6 +101,25 @@ export default {
     selectChannel (index) {
       this.activeIndex = index // 编辑页面和主页中表头顺序一致 所以传入索引值 将索引值给到活动索引
       this.showChannelEdit = false // 关闭弹窗
+    },
+    // 删除频道的方法
+    async delChannels (id) {
+      try {
+        await delChannels(id)
+        const index = this.channels.findIndex(item => item.id === id)
+        // 要根据当前删除的索引 和 当前激活的索引的 关系 来 决定 当前激活索引是否需要改变
+        if (index <= this.activeIndex) {
+          this.activeIndex = this.activeIndex - 1
+        }
+        this.channels.splice(index, 1) // 删除对应的索引频道
+      } catch (error) {
+        this.$gnotify({ message: '删除频道失败' })
+      }
+    },
+    // 添加频道的方法
+    async addChannel (channel) {
+      await addChannel(channel)
+      this.channels.push(channel)
     }
   },
   created () {

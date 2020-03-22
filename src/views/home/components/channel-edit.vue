@@ -13,7 +13,7 @@
         <van-grid-item v-for="(item,index) in channels" :key="item.id">
           <span class="f12" :class="{red: index===activeIndex}" @click="$emit('selectChannel',index)">{{item.name}}</span>
           <!-- 第一个频道不允许修改 index！==0 修改模式下显示插好 editing -->
-          <van-icon class="btn" name="cross" v-if="index !==0 && editing"></van-icon>
+          <van-icon @click="$emit('delChannels',item.id)" class="btn" name="cross" v-if="index !==0 && editing"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
@@ -23,7 +23,7 @@
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="item in optionalChannels" :key="item.id">
           <span class="f12">{{item.name}}</span>
-          <van-icon class="btn" name="plus"></van-icon>
+          <van-icon @click="$emit('addChannel',item)" class="btn" name="plus"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
