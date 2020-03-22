@@ -31,12 +31,36 @@ export function getChannels () {
   //   url: '/user/channels'
   // })
 }
-
 /**
  * 获取所有频道接口
  */
 export function getAllChannels () {
   return request({
     url: '/channels'
+  })
+}
+/**
+ * 删除频道接口
+ * params:id 频道的id
+ */
+export function delChannels (id) {
+  return new Promise(function (resolve, reject) {
+    // 童颜判断是否登录
+    const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T
+    // 直接将本地缓存中的字符串转化成对象
+    const channels = JSON.parse(localStorage.getItem(key))
+    // 根据传入的id找到对应的索引
+    const index = channels.findIndex(item => item.id === id)
+    if (index > -1) {
+      // 删除本地缓存的频道
+      channels.splice(index, 1)
+      // 将新的频道存入缓存
+      localStorage.setItem(key, JSON.stringify(channels))
+      // 返回结果
+      resolve()
+    } else {
+      // 没有找到对应的索引
+      reject(new Error('没有找到对应的频道...'))
+    }
   })
 }
