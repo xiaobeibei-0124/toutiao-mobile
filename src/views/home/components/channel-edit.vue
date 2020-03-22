@@ -11,7 +11,7 @@
       <!-- 我的频道： -->
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="(item,index) in channels" :key="item.id">
-          <span class="f12" @click="$emit('selectChannel',index)">{{item.name}}</span>
+          <span class="f12" :class="{red: index===activeIndex}" @click="$emit('selectChannel',index)">{{item.name}}</span>
           <!-- 第一个频道不允许修改 index！==0 修改模式下显示插好 editing -->
           <van-icon class="btn" name="cross" v-if="index !==0 && editing"></van-icon>
         </van-grid-item>
@@ -45,6 +45,11 @@ export default {
       required: true,
       type: Array,
       default: () => []
+    },
+    activeIndex: {
+      required: true,
+      type: Number,
+      default: 0
     }
   },
   methods: {
