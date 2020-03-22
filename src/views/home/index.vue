@@ -28,7 +28,7 @@
    <!-- 频道组件 -->
    <!-- 引入上拉菜单 -->
    <van-action-sheet v-model="showChannelEdit" title="编辑频道" :round="false">
-     <channelEdit :channels='channels'></channelEdit>
+     <channelEdit :channels='channels' @selectChannel='selectChannel'></channelEdit>
    </van-action-sheet>
   </div>
 </template>
@@ -96,6 +96,11 @@ export default {
           message: '操作失败'
         })
       }
+    },
+    // 选中我的频道方法
+    selectChannel (index) {
+      this.activeIndex = index // 编辑页面和主页中表头顺序一致 所以传入索引值 将索引值给到活动索引
+      this.showChannelEdit = false // 关闭弹窗
     }
   },
   created () {
