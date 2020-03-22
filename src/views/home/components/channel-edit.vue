@@ -1,19 +1,23 @@
 <template>
   <div class="channel-edit">
     <div class="channel">
+      <!-- 标题 -->
       <div class="tit">
         我的频道：
         <span class="tip">点击可进入频道</span>
         <van-button v-if="!editing" @click="editing=true" size="mini" type="info" plain>编辑</van-button>
         <van-button v-else @click="editing=false" size="mini" type="danger" plain>完成</van-button>
       </div>
+      <!-- 我的频道： -->
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="index in 8" :key="index">
-          <span class="f12">频道{{index}}</span>
-          <van-icon class="btn" name="cross"></van-icon>
+        <van-grid-item v-for="(item,index) in channels" :key="item.id">
+          <span class="f12">{{item.name}}</span>
+          <!-- 第一个频道不允许修改 index！==0 修改模式下显示插好 editing -->
+          <van-icon class="btn" name="cross" v-if="index !==0 && editing"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
+    <!-- 可选频道： -->
     <div class="channel">
       <div class="tit">可选频道：</div>
       <van-grid class="van-hairline--left">
@@ -32,7 +36,16 @@ export default {
     return {
       editing: false
     }
+  },
+  // 接收父组件传递进来的值,可以直接用
+  props: {
+    channels: {
+      required: true,
+      type: Array,
+      default: () => []
+    }
   }
+
 }
 </script>
 

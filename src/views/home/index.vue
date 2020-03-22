@@ -28,7 +28,7 @@
    <!-- 频道组件 -->
    <!-- 引入上拉菜单 -->
    <van-action-sheet v-model="showChannelEdit" title="编辑频道" :round="false">
-     <channelEdit></channelEdit>
+     <channelEdit :channels='channels'></channelEdit>
    </van-action-sheet>
   </div>
 </template>
