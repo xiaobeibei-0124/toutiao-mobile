@@ -14,7 +14,7 @@
      </van-tab>
    </van-tabs>
    <!-- 在tabs下放置图标  编辑频道的图标 -->
-   <span class="bar_btn">
+   <span class="bar_btn" @click="showChannelEdit=true">
      <van-icon name='wap-nav' />
    </span>
    <!-- 引入more-action组件 -->
@@ -25,6 +25,11 @@
       <!-- $event 是事件参数 在h5标签中 dom元素的事件参数  自定义事件中$event 就是自定义事件传出的第一个参数 -->
      <moreAction @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></moreAction>
    </van-popup>
+   <!-- 频道组件 -->
+   <!-- 引入上拉菜单 -->
+   <van-action-sheet v-model="showChannelEdit" title="编辑频道" :round="false">
+     <channelEdit></channelEdit>
+   </van-action-sheet>
   </div>
 </template>
 
@@ -37,17 +42,20 @@ import { getChannels } from '@/api/channels'
 import { disLike, reportArticle } from '@/api/articles'
 // 引入事件广播，触发文章不感兴趣接口后开始广播
 import eventBus from '@/utils/eventbus'
+import channelEdit from './components/channel-edit'
 export default {
   components: {
     ArticleList,
-    moreAction
+    moreAction,
+    channelEdit
   },
   data () {
     return {
       channels: [], // 接收频道数据
       showmoreAction: false,
       articleId: null, // 默认文章id为null
-      activeIndex: 0 // 默认分类标签为0
+      activeIndex: 0, // 默认分类标签为0
+      showChannelEdit: false // 显示频道组件
     }
   },
   methods: {
@@ -97,6 +105,17 @@ export default {
 </script>
 
 <style lang='less' scoped >
+.van-action-sheet {
+  max-height: 100%;
+  height: 100%;
+  .van-action-sheet__header {
+    background: #3296fa;
+    color: #fff;
+    .van-icon-close {
+      color: #fff;
+    }
+  }
+}
 .van-tabs {
   height: 100%;
   display: flex;
