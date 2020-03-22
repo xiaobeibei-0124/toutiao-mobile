@@ -10,3 +10,12 @@ export function getChannels () {
     url: '/user/channels'
   })
 }
+
+/**
+ * 获取所有频道接口
+ */
+export function getAllChannels () {
+  return request({
+    url: '/channels'
+  })
+}
