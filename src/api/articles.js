@@ -44,3 +44,12 @@ export function getSuggestion (params) {
     params
   })
 }
+/**
+ * 搜索文章结果接口
+ */
+export function searchArticle (params) {
+  return request({
+    url: '/search',
+    params
+  })
+}
