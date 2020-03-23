@@ -35,3 +35,12 @@ export function reportArticle (data) {
     data
   })
 }
+/**
+ * 搜索建议
+ */
+export function getSuggestion (params) {
+  return request({
+    url: '/suggestion',
+    params
+  })
+}
