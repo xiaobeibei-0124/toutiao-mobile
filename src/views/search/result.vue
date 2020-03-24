@@ -8,7 +8,7 @@
     <!-- 防止搜索结果列表 -->
     <van-list v-model="uploading" @load='onLoad' :finished="finished">
       <van-cell-group>
-        <van-cell v-for="item in articles" :key="item.art_id">
+        <van-cell v-for="item in articles" :key="item.art_id.toString()">
           <div class="article_item">
             <h3 class="van-ellipsis">{{item.title}}</h3>
             <div class="img_box" v-if="item.cover.type===3">
@@ -36,7 +36,7 @@ import { searchArticle } from '@/api/articles'
 export default {
   data () {
     return {
-      articles: [], // 防止文章
+      articles: [], // 放置搜索结果文章的
       page: {
         page: 1, // 分页数据 第几页
         per_page: 10 // 每页几条
