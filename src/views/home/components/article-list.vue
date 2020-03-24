@@ -8,7 +8,7 @@
     <van-pull-refresh v-model="downLoading" @refresh="onRefresh" :success-text="successText">
       <van-list v-model="upLoading" :finished="finished" @load="onLoad" finished-text="加载完毕">
         <van-cell-group>
-          <van-cell v-for="item in articles" :key="item.art_id.toString()">
+          <van-cell :to="`/article?artId=${item.art_id.toString()}`" v-for="item in articles" :key="item.art_id.toString()">
             <div class="article_item">
               <h3 class="van-ellipsis">{{item.title}}</h3>
               <!-- 三图情况 -->
@@ -27,7 +27,7 @@
                 <!-- 使用过滤器处理相对时间 -->
                 <span>{{item.pubdate | relTime}}</span>
                 <!-- 关闭的按键，用户没用登录不应该显示 是否登录有没有token值 -->
-                <span class="close" v-if="user.token" @click="$emit('showAction',item.art_id.toString())">
+                <span class="close" v-if="user.token" @click.stop="$emit('showAction',item.art_id.toString())">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
