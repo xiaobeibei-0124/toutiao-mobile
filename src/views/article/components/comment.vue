@@ -135,6 +135,7 @@ export default {
         if (!this.value) return false // 为空直接返回
         // 如果有内容，先把提交状态打开，避免重复提交
         this.submiting = true
+        await this.$sleep(800) // 强制休眠800毫秒
         // 调用接口
         try {
           const data = await commentOrReply({
