@@ -8,8 +8,9 @@
           width="1.5rem"
           height="1.5rem"
           fit="cover"
+          @click="showPhoto=true"
           round
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          :src="user.photo"
         />
       </van-cell>
       <van-cell is-link @click="showName=true" title="名称" :value="user.name" />
@@ -22,7 +23,7 @@
       <!-- 内容 -->
       <!-- 1 本地相册选择图片 -->
       <!-- 2 拍照 -->
-       <van-cell is-link title="本地相册选择图片"></van-cell>
+       <van-cell @click="openFileDialog" is-link title="本地相册选择图片"></van-cell>
        <van-cell is-link title="拍照"></van-cell>
     </van-popup>
 
@@ -49,12 +50,15 @@
           @cancel="showBirthDay=false"
          />
     </van-popup>
+
+    <!-- 文件选择控件 -->
+    <input ref="myFile" @change="upload()" type="file" style="display:none">
   </div>
 </template>
 
 <script>
 import dayjs from 'dayjs'
-import { getUserProfile } from '@/api/user'
+import { getUserProfile, updatePhoto } from '@/api/user'
 export default {
   data () {
     return {
@@ -98,6 +102,7 @@ export default {
     // 生日选择
     showDate () {
       this.showBirthDay = true
+      // 日期弹层要求date格式 传入的值是字符串 先要处理一下 转为date格式
       this.currentDate = new Date(this.user.birthday)
     },
     confirmDate () {
@@ -109,6 +114,18 @@ export default {
     // 获取用户信息
     async getUserProfile () {
       this.user = await getUserProfile()
+    },
+    // 打开选择文件的对话框 触发点击input:file的动作
+    openFileDialog () {
+      this.$refs.myFile.click() // 触发input:file的click事件 触发事件就会弹出文件对话框
+    },
+    // 修改更新头像接口
+    async upload () {
+      const data = new FormData()
+      data.append('photo', this.$refs.myFile.files[0]) // 第二个参数 是 选择的图片文件 选择图片文件
+      const result = await updatePhoto(data)
+      this.user.photo = result.photo
+      this.showPhoto = false
     }
   },
   created () {
