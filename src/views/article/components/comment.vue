@@ -1,5 +1,6 @@
 <template>
   <div class="comment">
+    <!-- 评论组件 -->
     <van-list v-model="loading" :finished="finished" @load="onLoad" finished-text="没有更多了">
       <div class="item van-hairline--bottom van-hairline--top" v-for="comment in comments" :key="comment.com_id.toString()">
         <van-image
@@ -25,14 +26,16 @@
         </div>
       </div>
     </van-list>
+    <!-- 输入评论框 -->
     <div class="reply-container van-hairline--top">
       <van-field v-model="value" placeholder="写评论...">
         <van-loading v-if="submiting" slot="button" type="spinner" size="16px"></van-loading>
-        <span class="submit" v-else slot="button">提交</span>
+        <span class="submit" v-else slot="button" @click="submit">提交</span>
       </van-field>
     </div>
      <!-- 评论的回复评论列表 -->
-    <van-action-sheet v-model="showReply" :round="false" class="reply_dialog" title="回复评论">
+     <!-- 在关闭回复弹窗的时候把reply.commentid置为null 以便于区分是对文章评论还是回复评论 -->
+    <van-action-sheet v-model="showReply" :round="false" @closed='reply.commentId=null' class="reply_dialog" title="回复评论">
       <!-- 关闭第一次默认加载 -->
       <van-list @load="getReply" :immediate-check="false" v-model="reply.loading" :finished="reply.finished" finished-text="没有更多了">
         <div class="item van-hairline--bottom van-hairline--top" v-for="item in reply.list" :key="item.com_id.toString()">
@@ -51,7 +54,7 @@
 </template>
 
 <script>
-import { getComments } from '@/api/articles'
+import { getComments, commentOrReply } from '@/api/articles'
 export default {
   data () {
     return {
@@ -72,7 +75,7 @@ export default {
         finished: false, // 评论的评论是否加载完毕
         offset: null, // 偏移量 作为评论的评论分页加载的时候 查询的依据
         list: [], // 存放 评论的评论的数据
-        commentId: null
+        commentId: null // 评论id
       }
     }
   },
@@ -122,6 +125,60 @@ export default {
         // 表示 还没没结束
         // data.last_id是 当前页的最后一个id
         this.offset = data.last_id
+      }
+    },
+    // 点击提交发布评论or回复评论
+    async submit () {
+      // 首先验证用户是否登录，游客是无法评论的，是否有token值
+      if (this.$store.state.user.token) {
+        // 判断输入的值是否为空
+        if (!this.value) return false // 为空直接返回
+        // 如果有内容，先把提交状态打开，避免重复提交
+        this.submiting = true
+        // 调用接口
+        try {
+          const data = await commentOrReply({
+          // 看是否有评论id 有的话就是恢复评论 传评论id 没有传文章id 文章id在路径中
+            target: this.reply.commentId ? this.reply.commentId : this.$route.query.artId,
+            content: this.value,
+            art_id: this.reply.commentId ? this.$route.query.artId : null
+          })
+          // 会有两种状态 对文章评论 恢复评论
+          if (this.reply.commentId) {
+            // 对评论进行评论
+            this.reply.list.unshift(data.new_obj)
+            // 评论数+1 找到对应的评论 comments评论列表 reply恢复评论
+            const comment = this.comments.find(item => item.com_id.toString() === this.reply.commentId)
+            comment && comment.reply_count++
+          } else {
+            // 对文章进行评论
+            this.comments.unshift(data.new_obj)
+          }
+          this.value = ''
+        } catch (error) {
+          this.$gnotify({
+            message: '评论失败'
+          })
+        }
+        this.submiting = false // 关闭提交状态
+      } else {
+        // 没有登录
+        // 弹窗告知用户要登录才能评论 confirm支持promise格式 可以用try catch
+        try {
+          await this.$dialog.confirm({
+            message: '如果想要评论消息，请先登录'
+          })
+          // 点击确定跳到登录页面
+          this.$router.push({
+            path: '/login',
+            // 携带当前所停留的页面地址，登陆之后直接跳转到该地址
+            query: {
+              redireUrl: this.$route.fullpath // 完整地址 path是不带后面参数的，所以这里用完整地址
+            }
+          })
+        } catch (error) {
+          console.log('点击了取消')
+        }
       }
     }
   }
