@@ -127,7 +127,7 @@ export default {
       this.user.photo = result.photo
       this.showPhoto = false
     },
-    // 保存修改信息
+    // 保存修改信息 性别接口后端有bug
     async saveUser () {
       try {
         await saveUserInfo(this.user) // 传入user对象
