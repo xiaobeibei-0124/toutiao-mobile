@@ -40,3 +40,11 @@ export function getUserInfo () {
     url: '/user'
   })
 }
+/**
+ * 获取用户个人资料
+ */
+export function getUserProfile (params) {
+  return request({
+    url: '/user/profile'
+  })
+}

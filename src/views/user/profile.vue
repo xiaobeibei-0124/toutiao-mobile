@@ -13,8 +13,8 @@
         />
       </van-cell>
       <van-cell is-link @click="showName=true" title="名称" :value="user.name" />
-      <van-cell is-link title="性别" value="男" />
-      <van-cell is-link title="生日" value="2019-08-08" />
+      <van-cell is-link @click="showGender=true" title="性别" :value="user.gender===0 ? '男' : '女'" />
+      <van-cell is-link @click="showDate" title="生日" :value="user.birthday" />
     </van-cell-group>
 
     <!-- 头像弹层组件 -->
@@ -34,7 +34,7 @@
     </van-popup>
 
     <!-- 性别弹层组件 -->
-    <van-action-sheet :actions="actions" v-model="showGender" cancel-text="取消"></van-action-sheet>
+    <van-action-sheet @select="selectItem" :actions="actions" v-model="showGender" cancel-text="取消"></van-action-sheet>
 
     <!-- 生日弹层组件 -->
     <van-popup v-model="showBirthDay" position="bottom">
@@ -45,12 +45,16 @@
            type="date"
           :min-date="minDate"
           :max-date="maxDate"
+          @confirm="confirmDate"
+          @cancel="showBirthDay=false"
          />
     </van-popup>
   </div>
 </template>
 
 <script>
+import dayjs from 'dayjs'
+import { getUserProfile } from '@/api/user'
 export default {
   data () {
     return {
@@ -75,6 +79,7 @@ export default {
     }
   },
   methods: {
+    // 昵称规则
     btnName () {
       // 对输入的文字进行验证1-7为
       if (this.user.name.length < 1 || this.user.name.length > 7) {
@@ -83,8 +88,33 @@ export default {
       }
       this.nameMsg = ''// 将错误信息清空
       this.showName = false // 关闭弹窗
+    },
+    // 性别选择
+    selectItem (item, index) {
+      // index 0 男 1 女
+      this.user.gender = index
+      this.showGender = false
+    },
+    // 生日选择
+    showDate () {
+      this.showBirthDay = true
+      this.currentDate = new Date(this.user.birthday)
+    },
+    confirmDate () {
+      //  当前选择的生日 其实就是 currenDate
+      // 拿到选择的日期  设置给生日  => date  => 字符串
+      this.user.birthday = dayjs(this.currentDate).format('YYYY-MM-DD') // 将date类型转化成字符串
+      this.showBirthDay = false
+    },
+    // 获取用户信息
+    async getUserProfile () {
+      this.user = await getUserProfile()
     }
+  },
+  created () {
+    this.getUserProfile()
   }
+
 }
 </script>
 
